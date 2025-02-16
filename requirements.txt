@@ -1,0 +1,15 @@
+certifi==2024.8.30
+charset-normalizer==3.4.0
+click==8.1.8
+decorator==5.1.1
+future==1.0.0
+geocoder==1.38.1
+idna==3.10
+ipapi==1.0.4
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+ratelim==0.1.6
+requests==2.32.3
+schedule==1.2.2
+six==1.16.0
+urllib3==2.2.3
