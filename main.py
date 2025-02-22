@@ -1,10 +1,7 @@
-import json, schedule, time, ipapi, geocoder
+import json, schedule, time, ipapi, geocoder, platform, re
 from class_openweathermap import OpenWeatherApi
 from os import environ, path, makedirs
 from class_notification_utils import NotificationUtility
-import platform, re
-import json
-# import argparse
 
 from dotenv import load_dotenv
 # Load environment variables from the .env file (if present)
