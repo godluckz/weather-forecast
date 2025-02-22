@@ -1,8 +1,9 @@
 import json, schedule, time, ipapi, geocoder
 from class_openweathermap import OpenWeatherApi
-from os import environ
+from os import environ, path, makedirs
 from class_notification_utils import NotificationUtility
 import platform, re
+import json
 # import argparse
 
 from dotenv import load_dotenv
@@ -14,6 +15,17 @@ w_device_location   : json = None
 w_device_details    : json = None
 W_GB_ADDRESS        : str = environ.get('MY_LOCATION') 
 W_GB_GOOGLE_API_KEY : str = environ.get('GOOGLE_API_KEY') 
+W_DATA_DIR          : str = "data"
+W_ARCHIVE_DIR       : str = "archive"
+W_ADDRESS_FNAME     : str = "data/address.json"
+
+def _setup_required_dirs():
+    print("==>> Check if need to setup program Directories.")
+    w_dirs : list = [W_DATA_DIR,W_ARCHIVE_DIR]
+    for r_dir in w_dirs:
+        if not path.exists(r_dir):
+            makedirs(r_dir)
+            print(f"Directory '{r_dir}' created.")
 
 
 def _load_device_details_geocoder(p_address : str): 
@@ -23,26 +35,41 @@ def _load_device_details_geocoder(p_address : str):
 
     w_geocoder_location = None
 
+    try:
+        with open(file=W_ADDRESS_FNAME,mode="r") as address_json:    
+            w_geocoder_location = json.load(address_json)
+    except Exception:
+         pass
+    
     if not w_address:
         w_address = W_GB_ADDRESS
 
-    try:       
-        if w_address and W_GB_GOOGLE_API_KEY:
-            print('** Using Address to get details from google')
-            w_loc = geocoder.google(location = w_address,
-                                    key      = W_GB_GOOGLE_API_KEY)
-        else:
-            print('** Using device location')
-            w_loc = geocoder.ip('me')#this function is used to find the current information using our IP Add
+    if w_geocoder_location:
+        print("Reusing address")
+    else:
+        try:       
+            if w_address and W_GB_GOOGLE_API_KEY:
+                print('** Using Address to get details from google')
+                w_loc = geocoder.google(location = w_address,
+                                        key      = W_GB_GOOGLE_API_KEY)
+            else:
+                print('** Using device location')
+                w_loc = geocoder.ip('me')#this function is used to find the current information using our IP Add
 
-        if w_loc.latlng is not None: #g.latlng tells if the coordiates are found or not
-            w_geocoder_location = w_loc.json
-            # print(w_geocoder_location)
-            print('* Found location details')
-    except Exception as e:
-        print(f"Error getting location: {e}")                    
-        w_geocoder_location = None
+            if w_loc.latlng is not None: #g.latlng tells if the coordiates are found or not
+                w_geocoder_location = w_loc.json
+                # print(w_geocoder_location)
+                print('* Found location details')
+        except Exception as e:
+            print(f"Error getting location: {e}")                    
+            w_geocoder_location = None
+
+
+        with open(file=W_ADDRESS_FNAME,mode="w") as json_file:            
+            json.dump(w_geocoder_location,json_file,indent=4)
     
+
+    # print(f"got: {w_geocoder_location}")
     return w_geocoder_location
 
         
@@ -50,7 +77,7 @@ def _load_device_details_geocoder(p_address : str):
 def load_device_details(p_address : str): 
     global w_device_location, w_device_details
     w_device_location = None
-    w_device_details  = None
+    w_device_details  = None    
     w_geocoder_location = _load_device_details_geocoder(p_address) #More accurate
     if w_geocoder_location:
         w_device_location = {
@@ -229,6 +256,7 @@ if __name__ == "__main__":
     print("============++++++++++++============")    
     w_weather_address = None
     if environ.get("OPW_API_KEY"):
+        _setup_required_dirs()
         w_email_to      : str = environ.get("WEATHER_EMAIL_TO")
         # w_email_to      : str = input("Enter Email address to send weather report to (comma separated if more than one): ").strip().lower().replace(";",",")
         w_email_to_list : list = [i.strip() for i in w_email_to.split(",") if i]#remove empty data

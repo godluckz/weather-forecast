@@ -8,9 +8,10 @@
 ###oops.. This project
 program_keys.py
 images/
-data/
 output/
+data/
 *.jpg
+address.json
 
 ### Also any macOS specific files
 .DS_Store
