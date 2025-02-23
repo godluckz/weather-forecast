@@ -123,10 +123,8 @@ def format_weather_data(p_weather_data, p_weather_date):
                     {w_image_source} {p_weather_data["temperature"]}c - {p_weather_data["weather_description"]} <br>                
                     <b>Feels:</b> {p_weather_data["feels_like"]}c, <b>H:</b>{p_weather_data["temperature_max"]} <b>L:</b>{p_weather_data["temperature_min"]} <br>
                     <b>Humidity:</b> {p_weather_data["humidity"]}% <br>
-                    <b>Wind:</b> {round(p_weather_data["wind_speed"]*3.6,2)} km/h  <br>
-                    <b>Sunrise:</b> {p_weather_data["sunrise"]} <br>
-                    <b>Sunset:</b> {p_weather_data["sunset"]} <br>                                            
-                    </p>                    
+                    <b>Wind:</b> {round(p_weather_data["wind_speed"]*3.6,2)} km/h  <br>                                         
+                    </p>        
                     '''     
     return w_format_str
 
@@ -154,11 +152,15 @@ def main(p_email_list : str,
 
     print("==>> Call to get weather summary.")
     w_weather_info: json= w_weather.get_weather_summary()  
+    w_sunrise = None
+    w_sunset = None
     if w_weather_info:
         for w_weather_r in w_weather_info:        
             if w_weather_r == 'NOW':            
                 w_weather      = w_weather_info[w_weather_r]   
                 # print(w_weather)
+                w_sunrise = w_weather["data"]["sunrise"]
+                w_sunset  = w_weather["data"]["sunset"]
                 w_today_weather = f'''    
                                 <p>                    
                                     <u><b>TODAY's WEATHER:</b></u> <br>                                                
@@ -179,6 +181,7 @@ def main(p_email_list : str,
                     # print(w_weather[w_index]["data"])                                                  
                     w_weather_focast = f'''    
                                     {w_weather_focast} {format_weather_data(w_weather[w_index]["data"], w_weather[w_index]["weather_date"])}
+                                    <p>**********************</p> 
                                     '''  
                 w_weather_focast = f'''    
                                     {w_weather_focast}                            
@@ -189,8 +192,11 @@ def main(p_email_list : str,
             w_email_body = f"""
                             <p>Good day,</p>
                             <p>Find below, weather information for {w_city}, {w_region} - {w_country_name}</p>
+                                
                             <p>========================</p>
-
+                            <p><b>Sunrise</b> : {w_sunrise}</p>
+                            <p><b>Sunset</b>  : {w_sunset}</p>    
+                            
                             {w_today_weather} 
                             =====================
 
