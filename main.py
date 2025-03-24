@@ -1,7 +1,11 @@
-import json, schedule, time, ipapi, geocoder, platform, re
+# Local importation
+from class_email_notification import EmailNotification
 from class_openweathermap import OpenWeatherApi
+
+# Global importation
+import json, schedule, time, ipapi, geocoder, platform, re
 from os import environ, path, makedirs
-from class_notification_utils import NotificationUtility
+
 
 from dotenv import load_dotenv
 # Load environment variables from the .env file (if present)
@@ -143,7 +147,7 @@ def main(p_email_list : str,
     #     print(f"{key}: {value}")
     # print(f"w_device_lattitude: {w_device_lattitude}  - W_device_longitude: {W_device_longitude}")
 
-    notification : NotificationUtility = NotificationUtility()    
+    notification : EmailNotification = EmailNotification()    
     
     print("==>> Call OpenWeatherApi.")
     w_weather : OpenWeatherApi = OpenWeatherApi(p_latitude         = w_device_lattitude, 
