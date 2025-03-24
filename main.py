@@ -213,10 +213,10 @@ def main(p_email_list : str,
             if p_email_list and len(p_email_list) > 0:    
                 print("==>> Sending forecast notification.")
                 W_SUBJECT:  str = "🌦️Weather Forecast🌞"
-
+                w_email_body = '<html><body>' + w_email_body + '</body></html>'
                 notification.send_email(p_email_to  = p_email_list,
                                         p_subject   = W_SUBJECT,                       
-                                        p_message   = w_email_body)
+                                        p_message_html   = w_email_body)
 
 
 
